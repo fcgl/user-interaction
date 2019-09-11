@@ -1,5 +1,7 @@
 # User-Interaction Microservices
 
+The sole purpose of this repository is to authenticate a user and produce a JWT token that other services can use
+
 **Note:** 
   * You will only need docker installed on your computer to run this app
 
@@ -15,12 +17,11 @@
 This build should work for both macOS and Linux
 
 1. Download docker for your operating system
-2. From project root run the following commands:
-  * **Build:** `docker build -t user-service .`
-  * **Run:** `docker run -d=true -p 8085:8085 user-service`
+2. From project root run the following command:
+    * `docker-compose up --build`
 
 ## Health Endpoint
 
 Confirm everything was ran correctly by going to the following endpoint: 
-  * http://localhost:8085/health/v1/marco
+  * http://localhost:8080/health/v1/marco
 
