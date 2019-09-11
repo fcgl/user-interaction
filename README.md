@@ -23,5 +23,5 @@ This build should work for both macOS and Linux
 ## Health Endpoint
 
 Confirm everything was ran correctly by going to the following endpoint: 
-  * http://localhost:8085/health/v1/marco
+  * http://localhost:8080/health/v1/marco
 
