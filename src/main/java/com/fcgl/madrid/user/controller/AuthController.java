@@ -1,7 +1,8 @@
 package com.fcgl.madrid.user.controller;
 
-import com.fcgl.madrid.user.payload.LoginRequest;
-import com.fcgl.madrid.user.payload.SignUpRequest;
+import com.fcgl.madrid.user.payload.request.LoginRequest;
+import com.fcgl.madrid.user.payload.request.SignUpRequest;
+import com.fcgl.madrid.user.payload.response.LoginResponse;
 import com.fcgl.madrid.user.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         return authService.authenticateUser(loginRequest);
     }
 

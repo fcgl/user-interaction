@@ -3,13 +3,17 @@ package com.fcgl.madrid.user.service;
 import com.fcgl.madrid.user.dataModel.AuthProvider;
 import com.fcgl.madrid.user.dataModel.User;
 import com.fcgl.madrid.user.exception.BadRequestException;
-import com.fcgl.madrid.user.payload.ApiResponse;
-import com.fcgl.madrid.user.payload.AuthResponse;
-import com.fcgl.madrid.user.payload.LoginRequest;
-import com.fcgl.madrid.user.payload.SignUpRequest;
+import com.fcgl.madrid.user.payload.InternalStatus;
+import com.fcgl.madrid.user.payload.StatusCode;
+import com.fcgl.madrid.user.payload.response.ApiResponse;
+import com.fcgl.madrid.user.payload.response.AuthResponse;
+import com.fcgl.madrid.user.payload.request.LoginRequest;
+import com.fcgl.madrid.user.payload.request.SignUpRequest;
+import com.fcgl.madrid.user.payload.response.LoginResponse;
 import com.fcgl.madrid.user.repository.UserRepository;
 import com.fcgl.madrid.user.security.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,8 +22,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.net.URI;
+import org.springframework.security.authentication.BadCredentialsException;
+
 
 @Service
 public class AuthService {
@@ -38,18 +44,33 @@ public class AuthService {
         this.tokenProvider = tokenProvider;
     }
 
-    public ResponseEntity<?> authenticateUser(LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()
-                )
-        );
+    /**
+     * TODO: Add Resilience4j, There could be SQL errors that we need to catch
+     * Authenticates the user
+     * @param loginRequest request params
+     * @return ResponseEntity
+     */
+    public ResponseEntity<LoginResponse> authenticateUser(LoginRequest loginRequest) {
+        Authentication authentication = null;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
+            );
+        } catch(BadCredentialsException e) {
+            InternalStatus internalStatus = new InternalStatus(StatusCode.AUTH_ERROR, HttpStatus.UNAUTHORIZED, e.getMessage());
+            return new ResponseEntity<LoginResponse>(new LoginResponse(internalStatus, null), HttpStatus.UNAUTHORIZED);
+        }
+
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String token = tokenProvider.createToken(authentication);
-        return ResponseEntity.ok(new AuthResponse(token));
+        AuthResponse authResponse = new AuthResponse(token);
+        LoginResponse response = new LoginResponse(InternalStatus.OK, authResponse);
+        return new ResponseEntity<LoginResponse>(response ,HttpStatus.OK);
     }
 
     public ResponseEntity<?> registerUser(SignUpRequest signUpRequest) {
