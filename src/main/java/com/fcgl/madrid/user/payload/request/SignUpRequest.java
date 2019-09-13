@@ -1,4 +1,4 @@
-package com.fcgl.madrid.user.payload;
+package com.fcgl.madrid.user.payload.request;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package com.fcgl.madrid.user.payload;
+package com.fcgl.madrid.user.payload.response;
 
 public class AuthResponse {
     private String accessToken;
