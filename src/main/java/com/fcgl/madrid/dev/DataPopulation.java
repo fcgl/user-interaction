@@ -25,7 +25,7 @@ public class DataPopulation {
     public void init() {
         User user = new User();
         user.setName("FCGL TEST");
-        user.setEmail("test@fcgl.io");
+        user.setPhoneNumber("+18574078437");
         user.setPassword("password");
         user.setProvider(AuthProvider.local);
 
