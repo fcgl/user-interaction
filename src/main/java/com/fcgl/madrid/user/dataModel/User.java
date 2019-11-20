@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email")
+        @UniqueConstraint(columnNames = "phoneNumber")
 })
 public class User {
     @Id
@@ -19,8 +19,11 @@ public class User {
     private String name;
 
     @Email
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String email;
+
+    @Column(nullable = false)
+    private String phoneNumber;
 
     private String imageUrl;
 
@@ -100,5 +103,12 @@ public class User {
         this.providerId = providerId;
     }
 
-    // Getters and Setters (Omitted for brevity)
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
 }

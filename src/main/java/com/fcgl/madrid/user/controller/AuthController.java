@@ -4,7 +4,9 @@ import com.fcgl.madrid.user.payload.request.LoginRequest;
 import com.fcgl.madrid.user.payload.request.SignUpRequest;
 import com.fcgl.madrid.user.payload.response.LoginResponse;
 import com.fcgl.madrid.user.service.AuthService;
+import com.fcgl.madrid.user.service.twilio.TwilioSms;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,10 +20,12 @@ import javax.validation.Valid;
 public class AuthController {
 
     private AuthService authService;
+    private TwilioSms twilioSms;
 
     @Autowired
-    public void setAuthService(AuthService authService) {
+    public void setAuthService(AuthService authService, TwilioSms twilioSms) {
         this.authService = authService;
+        this.twilioSms = twilioSms;
     }
 
     @PostMapping("/login")
@@ -32,5 +36,10 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         return authService.registerUser(signUpRequest);
+    }
+
+    @PostMapping("/sendSms")
+    public ResponseEntity<?> sendSms() {
+        return new ResponseEntity<String>(twilioSms.sendSms("Testing SMS", "+18574078438"), HttpStatus.OK);
     }
 }

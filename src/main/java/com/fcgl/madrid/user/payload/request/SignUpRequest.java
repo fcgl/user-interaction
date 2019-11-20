@@ -7,12 +7,14 @@ public class SignUpRequest {
     @NotBlank
     private String name;
 
-    @NotBlank
-    @Email
+//    @NotBlank
+//    @Email
     private String email;
 
     @NotBlank
-    private String password;
+    private String phoneNumber;
+//    @NotBlank
+//    private String password;
 
     public String getName() {
         return name;
@@ -30,12 +32,20 @@ public class SignUpRequest {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+//    public String getPassword() {
+//        return password;
+//    }
+//
+//    public void setPassword(String password) {
+//        this.password = password;
+//    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     // Getters and Setters (Omitted for brevity)

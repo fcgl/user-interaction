@@ -12,6 +12,7 @@ import com.fcgl.madrid.user.payload.request.SignUpRequest;
 import com.fcgl.madrid.user.payload.response.LoginResponse;
 import com.fcgl.madrid.user.repository.UserRepository;
 import com.fcgl.madrid.user.security.TokenProvider;
+import com.fcgl.madrid.user.service.twilio.TwilioSms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,14 +35,19 @@ public class AuthService {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private TokenProvider tokenProvider;
+    private OtpService otpService;
+    private TwilioSms twilioSms;
 
     @Autowired
     public AuthService(AuthenticationManager authenticationManager, UserRepository userRepository,
-                       PasswordEncoder passwordEncoder, TokenProvider tokenProvider) {
+                       PasswordEncoder passwordEncoder, TokenProvider tokenProvider, OtpService otpService,
+                       TwilioSms twilioSms) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
+        this.otpService = otpService;
+        this.twilioSms = twilioSms;
     }
 
     /**
@@ -55,7 +61,7 @@ public class AuthService {
         try {
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getEmail(),
+                            loginRequest.getPhoneNumber(),
                             loginRequest.getPassword()
                     )
             );
@@ -74,26 +80,34 @@ public class AuthService {
     }
 
     public ResponseEntity<?> registerUser(SignUpRequest signUpRequest) {
-        if(userRepository.existsByEmail(signUpRequest.getEmail())) {
-            throw new BadRequestException("Email address already in use.");
-        }
+//        if(userRepository.existsByEmail(signUpRequest.getEmail())) {
+//            throw new BadRequestException("Email address already in use.");
+//        }
 
+        if (userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
+            throw new BadRequestException("Phone Number already in use.");
+        }
+        String otpValue = otpService.generateOtp();
         // Creating user's account
         User user = new User();
         user.setName(signUpRequest.getName());
-        user.setEmail(signUpRequest.getEmail());
-        user.setPassword(signUpRequest.getPassword());
+//        user.setEmail(signUpRequest.getEmail());
+        user.setPhoneNumber(signUpRequest.getPhoneNumber());
+        user.setPassword(otpValue);
         user.setProvider(AuthProvider.local);
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(otpValue));
 
         User result = userRepository.save(user);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/user/me")
                 .buildAndExpand(result.getId()).toUri();
-
+        //TODO: Phone number error handling
+        System.out.println("Before twilio");
+        twilioSms.sendSms("Cowboy OTP: " + otpValue, signUpRequest.getPhoneNumber());
+        System.out.println("After twilio");
         return ResponseEntity.created(location)
-                .body(new ApiResponse(true, "User registered successfully@"));
+                .body(new ApiResponse(true, "User registered successfully, Verify OTP to complete registration"));
     }
 }

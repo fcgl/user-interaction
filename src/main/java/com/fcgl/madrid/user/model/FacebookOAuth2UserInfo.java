@@ -23,7 +23,10 @@ public class FacebookOAuth2UserInfo extends OAuth2UserInfo {
     public String getEmail() {
         return (String) attributes.get("email");
     }
-
+    @Override
+    public String getPhoneNumber() {
+        return (String) attributes.get("phone");
+    }
     @Override
     public String getImageUrl() {
         if(attributes.containsKey("picture")) {

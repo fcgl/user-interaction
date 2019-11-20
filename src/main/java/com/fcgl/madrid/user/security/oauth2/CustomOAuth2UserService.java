@@ -41,11 +41,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
-        if(StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {
-            throw new OAuth2AuthenticationProcessingException("Email not found from OAuth2 provider");
+        if(StringUtils.isEmpty(oAuth2UserInfo.getPhoneNumber())) {
+            throw new OAuth2AuthenticationProcessingException("Phone Number not found from OAuth2 provider");
         }
 
-        Optional<User> userOptional = userRepository.findByEmail(oAuth2UserInfo.getEmail());
+        Optional<User> userOptional = userRepository.findByPhoneNumber(oAuth2UserInfo.getPhoneNumber());
         User user;
         if(userOptional.isPresent()) {
             user = userOptional.get();
@@ -68,7 +68,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         user.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
         user.setProviderId(oAuth2UserInfo.getId());
         user.setName(oAuth2UserInfo.getName());
-        user.setEmail(oAuth2UserInfo.getEmail());
+        user.setPhoneNumber(oAuth2UserInfo.getPhoneNumber());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
         return userRepository.save(user);
     }

@@ -24,6 +24,11 @@ public class GithubOAuth2UserInfo extends OAuth2UserInfo {
     }
 
     @Override
+    public String getPhoneNumber() {
+        return (String) attributes.get("phone");
+    }
+
+    @Override
     public String getImageUrl() {
         return (String) attributes.get("avatar_url");
     }
