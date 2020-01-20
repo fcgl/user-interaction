@@ -26,4 +26,5 @@ public class LoginResponse {
     public void setResponse(AuthResponse response) {
         this.response = response;
     }
+
 }

@@ -12,6 +12,7 @@ import com.fcgl.madrid.user.payload.request.SignUpRequest;
 import com.fcgl.madrid.user.payload.response.LoginResponse;
 import com.fcgl.madrid.user.repository.UserRepository;
 import com.fcgl.madrid.user.security.TokenProvider;
+import com.fcgl.madrid.user.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,7 +69,9 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String token = tokenProvider.createToken(authentication);
-        AuthResponse authResponse = new AuthResponse(token);
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        String userId = Long.toString(userPrincipal.getId());
+        AuthResponse authResponse = new AuthResponse(token, userId);
         LoginResponse response = new LoginResponse(InternalStatus.OK, authResponse);
         return new ResponseEntity<LoginResponse>(response ,HttpStatus.OK);
     }
