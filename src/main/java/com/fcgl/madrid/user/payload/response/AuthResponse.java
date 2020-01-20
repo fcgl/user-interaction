@@ -3,9 +3,11 @@ package com.fcgl.madrid.user.payload.response;
 public class AuthResponse {
     private String accessToken;
     private String tokenType = "Bearer";
+    private String userId;
 
-    public AuthResponse(String accessToken) {
+    public AuthResponse(String accessToken, String userId) {
         this.accessToken = accessToken;
+        this.userId = userId;
     }
 
     public String getAccessToken() {
@@ -22,6 +24,14 @@ public class AuthResponse {
 
     public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     // Getters and Setters (Omitted for brevity)
